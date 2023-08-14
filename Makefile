@@ -1,5 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++11
+CXXFLAGS = -std=c++17
+LDFLAGS = -lcurl
 
 SRCS = main.cpp items.cpp
 OBJS = $(SRCS:.cpp=.o)
@@ -15,7 +16,7 @@ items.h: items.json
 	@xxd -i items.json > items.h
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)   # Add $(LDFLAGS) here
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $<
