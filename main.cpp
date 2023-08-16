@@ -24,6 +24,21 @@ std::string trim(const std::string &str) {
     return str.substr(start, end - start + 1);
 }
 
+std::string findFieldValue(const std::string& jsonString, const std::string& field) {
+    std::string result;
+    
+    size_t pos = jsonString.find("\"" + field + "\":\"");
+    if (pos != std::string::npos) {
+        pos += field.length() + 4; // Move the position to the beginning of the value
+        
+        size_t endPos = jsonString.find("\"", pos);
+        if (endPos != std::string::npos) {
+            result = jsonString.substr(pos, endPos - pos);
+        }
+    }
+    
+    return result;
+}
 
 int main() {
     CURL* curl = curl_easy_init();
@@ -94,12 +109,12 @@ int main() {
                 break;
             }
             ++i;
-            if ( i == 5 ) break;
+            if ( i == 1 ) break;
         }
 
         std::cout << "ID: " << id << std::endl;
         std::cout << "First 5 results:" << std::endl;
-        for (size_t i = 0; i < std::min(resultArray.size(), size_t(5)); ++i) {
+        for (size_t i = 0; i < std::min(resultArray.size(), size_t(1)); ++i) {
             std::cout << resultArray[i] << std::endl;
         }
         std::string delimiter = ",";
@@ -127,8 +142,16 @@ int main() {
 
         if (res2 != CURLE_OK) {
             std::cerr << "Curl error: " << curl_easy_strerror(res2) << std::endl;
+        } 
+        // else {
+        //     std::cout << "Response 2: " << response2 << std::endl;
+        // }
+
+        std::string whisper = findFieldValue(response2, "whisper");
+        if (!whisper.empty()) {
+            std::cout << whisper << std::endl; // Print the "whisper" field
         } else {
-            std::cout << "Response 2: " << response2 << std::endl;
+            std::cerr << "Whisper field not found." << std::endl;
         }
 
         // Clean up
